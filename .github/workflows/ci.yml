@@ -41,6 +41,12 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --group dev
+
+      - name: Create tables
+        run: uv run python -m scripts.create_tables
+        env:
+          DATABASE_URL: postgresql+psycopg://pactoid:pactoid_pass@localhost:5432/pactoid_db
+
       - name: Run test suite
         run: uv run pytest -v
         env:
