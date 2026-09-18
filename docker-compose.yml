@@ -1,0 +1,41 @@
+services:
+  app:
+    build: .
+    container_name: pactoid_app
+    volumes:
+      - .:/app
+      - /app/.venv   # .venv не перезаписывается хостом
+    environment:
+      - DATABASE_URL=postgresql+psycopg://pactoid:pactoid_pass@postgres:5432/pactoid_db
+      - REDIS_URL=redis://redis:6379/0
+      - OLLAMA_URL=http://host.docker.internal:11434
+    depends_on:
+      - postgres
+      - redis
+    tty: true
+
+  postgres:
+    image: postgres:16
+    container_name: pactoid_postgres
+    environment:
+      POSTGRES_USER: pactoid
+      POSTGRES_PASSWORD: pactoid_pass
+      POSTGRES_DB: pactoid_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: pactoid_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - vscode-server:/root/.vscode-server
+
+volumes:
+  postgres_data:
+  redis_data:
+  vscode-server:
