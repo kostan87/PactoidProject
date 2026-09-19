@@ -43,7 +43,6 @@ def test_repo_product_is_full(session):
 
     assert price_at_db is not None
 
-
 def test_repo_product_price_changed(session):
     product1 = {
         "id": 200999000999000,
