@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.models.product import Product
 from app.models.price_history import PriceHistory
+from app.models.review import Review
 
 def upsert_product(session:Session, product:dict) -> Product | None:
     current_product = {key:value for key,value in product.items() if key not in ("price_basic", "price_product")}

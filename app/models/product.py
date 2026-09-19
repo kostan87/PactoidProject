@@ -11,6 +11,7 @@ from app.utils.time import utcnow
 class Product(Base):
     __tablename__ = "products"
     prices: Mapped[list["PriceHistory"]] = relationship(back_populates="product")
+    reviews: Mapped[list["Review"]] = relationship(back_populates="product", cascade="all, delete-orphan")
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
     name: Mapped[str] = mapped_column(Text)
     brand: Mapped[str | None] = mapped_column(Text, nullable=True)
