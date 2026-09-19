@@ -72,3 +72,15 @@ def parse_review(raw: dict) -> dict | None:
         "parent_feedback_id": raw.get("parentFeedbackId") or None,
         "child_feedback_id": raw.get("childFeedbackId") or None
     }
+
+def parse_reviews(data: dict) -> list[dict]:
+    if not isinstance(data, dict):
+        return []
+
+    reviews = []
+    for review in (data.get("feedbacks") or []):
+        if isinstance(review, dict):
+            parsed_review = parse_review(review)
+            if parsed_review is not None:
+                reviews.append(parsed_review)
+    return reviews
