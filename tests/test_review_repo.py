@@ -2,14 +2,12 @@ from datetime import datetime, timezone
 
 from sqlalchemy import select
 
-from app.db import SessionLocal
-
 from app.repositories.product_repo import upsert_product
 from app.repositories.review_repo import upsert_review
 
 from app.models.review import Review
 
-def test_repo_review_is_full():
+def test_repo_review_is_full(session):
     product = { 
         "id": 100222230,
         "subject_id": 123,
@@ -41,34 +39,31 @@ def test_repo_review_is_full():
         "child_feedback_id": "StringID_child"
     }
 
-    with SessionLocal() as session:
-        upsert_product(session, product)
-        upsert_review(session, review)
-        session.flush()
-        session.expire_all()
+    upsert_product(session, product)
+    upsert_review(session, review)
+    session.flush()
+    session.expire_all()
 
-        review_at_db = session.get(Review, "StringID_reviewID")
+    review_at_db = session.get(Review, "StringID_reviewID")
 
-        assert review_at_db is not None
+    assert review_at_db is not None
 
-        assert review_at_db.id == "StringID_reviewID"
-        assert review_at_db.nm_id == 100222230
-        assert review_at_db.text == "String_Text"
-        assert review_at_db.pros == "String_Pros"
-        assert review_at_db.cons == "String_Cons"
-        assert review_at_db.product_valuation == 5
-        assert review_at_db.created_date == datetime(2025, 11, 19, 9, 36, 4, tzinfo=timezone.utc)
-        assert review_at_db.status_id == 16
-        assert review_at_db.global_user_id == "StringID_globalUserId"
-        assert review_at_db.votes_pluses == 3
-        assert review_at_db.votes_minuses == 0
-        assert review_at_db.is_excluded_from_rating == True
-        assert review_at_db.parent_feedback_id == "StringID_parent"
-        assert review_at_db.child_feedback_id == "StringID_child"
+    assert review_at_db.id == "StringID_reviewID"
+    assert review_at_db.nm_id == 100222230
+    assert review_at_db.text == "String_Text"
+    assert review_at_db.pros == "String_Pros"
+    assert review_at_db.cons == "String_Cons"
+    assert review_at_db.product_valuation == 5
+    assert review_at_db.created_date == datetime(2025, 11, 19, 9, 36, 4, tzinfo=timezone.utc)
+    assert review_at_db.status_id == 16
+    assert review_at_db.global_user_id == "StringID_globalUserId"
+    assert review_at_db.votes_pluses == 3
+    assert review_at_db.votes_minuses == 0
+    assert review_at_db.is_excluded_from_rating == True
+    assert review_at_db.parent_feedback_id == "StringID_parent"
+    assert review_at_db.child_feedback_id == "StringID_child"
 
-        session.rollback()
-
-def test_repo_review_update():
+def test_repo_review_update(session):
     product = { 
         "id": 200222230,
         "subject_id": 123,
@@ -117,23 +112,21 @@ def test_repo_review_update():
         "child_feedback_id": "StringID_child"
     }
 
-    with SessionLocal() as session:
-        upsert_product(session, product)
-        upsert_review(session, review1)
-        session.flush()
-        upsert_review(session, review2)
-        session.flush()
-        session.expire_all()
+    upsert_product(session, product)
+    upsert_review(session, review1)
+    session.flush()
+    upsert_review(session, review2)
+    session.flush()
+    session.expire_all()
 
-        review_at_db = session.scalars(select(Review).where(Review.nm_id == 200222230)).all()
-        
-        assert len(review_at_db) == 1
+    review_at_db = session.scalars(select(Review).where(Review.nm_id == 200222230)).all()
+    
+    assert len(review_at_db) == 1
 
-        assert review_at_db[0].votes_pluses == 15
-        assert review_at_db[0].votes_minuses == 14
-        session.rollback()
+    assert review_at_db[0].votes_pluses == 15
+    assert review_at_db[0].votes_minuses == 14
 
-def test_repo_review_without_product():
+def test_repo_review_without_product(session):
     review = {
         "id": "StringID_reviewID",
         "nm_id": 300222230,
@@ -151,18 +144,15 @@ def test_repo_review_without_product():
         "child_feedback_id": "StringID_child"
     }
 
-    with SessionLocal() as session:
-        assert upsert_review(session, review) is None
-        session.flush()
-        session.expire_all()
+    assert upsert_review(session, review) is None
+    session.flush()
+    session.expire_all()
 
-        review_at_db = session.scalar(select(Review).where(Review.nm_id == 300222230))
-        
-        assert review_at_db is None
+    review_at_db = session.scalar(select(Review).where(Review.nm_id == 300222230))
+    
+    assert review_at_db is None
 
-        session.rollback()
-
-def test_repo_review_changed_nm_id():
+def test_repo_review_changed_nm_id(session):
     product1 = { 
         "id": 400222230,
         "subject_id": 123,
@@ -226,18 +216,15 @@ def test_repo_review_changed_nm_id():
         "child_feedback_id": "StringID_child"
     }
 
-    with SessionLocal() as session:
-        upsert_product(session, product1)
-        upsert_review(session, review1)
-        session.flush()
-        upsert_product(session, product2)
-        upsert_review(session, review2)
-        session.flush()
-        session.expire_all()
+    upsert_product(session, product1)
+    upsert_review(session, review1)
+    session.flush()
+    upsert_product(session, product2)
+    upsert_review(session, review2)
+    session.flush()
+    session.expire_all()
 
-        review_at_db = session.get(Review, "StringID_reviewID")
-        assert review_at_db.nm_id == 400222230
-        assert review_at_db[0].votes_pluses == 15
-        assert review_at_db[0].votes_minuses == 14
-
-        session.rollback()
+    review_at_db = session.get(Review, "StringID_reviewID")
+    assert review_at_db.nm_id == 400222230
+    assert review_at_db.votes_pluses == 15
+    assert review_at_db.votes_minuses == 14
