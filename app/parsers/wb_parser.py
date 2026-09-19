@@ -1,3 +1,5 @@
+from datetime import datetime
+
 def parse_product(raw: dict) -> dict | None:
     wb_id = raw.get("id")
     if not wb_id:
@@ -37,3 +39,36 @@ def parse_products(data: dict) -> list[dict]:
             if parsed_product is not None:
                 products.append(parsed_product)
     return products
+
+def parse_review(raw: dict) -> dict | None:
+    review_id = raw.get("id") or None
+    nm_id = raw.get("nmId") or None
+    created_date = raw.get("createdDate") or None
+    if not review_id or not nm_id or not created_date:
+        return None
+
+    created_date = datetime.fromisoformat(created_date)
+
+    votes = raw.get("votes") or {}  
+    votes_pluses = votes.get("pluses") or 0
+    votes_minuses = votes.get("minuses") or 0
+
+    excluded_from_rating = raw.get("excludedFromRating") or {}
+    excluded_from_rating = excluded_from_rating.get("isExcluded") or False
+
+    return {
+        "id": review_id,
+        "nm_id": nm_id,
+        "text": raw.get("text") or None,
+        "pros": raw.get("pros") or None,
+        "cons": raw.get("cons") or None,
+        "product_valuation": raw.get("productValuation") or None,
+        "created_date": created_date,
+        "status_id": raw.get("statusId") or None,
+        "global_user_id": raw.get("globalUserId") or None,
+        "votes_pluses": votes_pluses,
+        "votes_minuses": votes_minuses,
+        "is_excluded_from_rating": excluded_from_rating,
+        "parent_feedback_id": raw.get("parentFeedbackId") or None,
+        "child_feedback_id": raw.get("childFeedbackId") or None
+    }

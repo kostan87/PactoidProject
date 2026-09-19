@@ -1,4 +1,6 @@
-from app.parsers.wb_parser import parse_product, parse_products
+from datetime import datetime
+
+from app.parsers.wb_parser import parse_product, parse_products, parse_review
 
 def test_parse_product_full():
     raw = {
@@ -335,3 +337,202 @@ def test_parse_not_dict_at_products():
         ]
     }
     assert len(parse_products(raw)) == 1
+
+def test_parse_review_full():
+    raw = {
+      "id": "StringID_reviewID",
+      "globalUserId": "StringID_globalUserId",
+      "nmId": 100222230,
+      "text": "String_Text",
+      "pros": "String_Pros",
+      "cons": "String_Cons",
+      "productValuation": 5,
+      "createdDate": "2025-11-19T09:36:04Z",
+      "votes": {
+        "pluses": 3,
+        "minuses": 0
+      },
+      "statusId": 16,
+      "parentFeedbackId": "StringID_parent",
+      "childFeedbackId": "StringID_child",
+      "excludedFromRating": {
+        "isExcluded": True,
+        "reasons": [
+          "hasIncludedChild"
+        ]
+      }
+    }
+
+    result = parse_review(raw)
+    assert result["id"] == "StringID_reviewID"
+    assert result["nm_id"] == 100222230
+    assert result["text"] == "String_Text"
+    assert result["pros"] == "String_Pros"
+    assert result["cons"] == "String_Cons"
+    assert result["product_valuation"] == 5
+    assert result["created_date"] == datetime.fromisoformat("2025-11-19T09:36:04Z")
+    assert result["status_id"] == 16
+    assert result["global_user_id"] == "StringID_globalUserId"
+    assert result["votes_pluses"] == 3
+    assert result["votes_minuses"] == 0
+    assert result["is_excluded_from_rating"] == True
+    assert result["parent_feedback_id"] == "StringID_parent"
+    assert result["child_feedback_id"] == "StringID_child"
+
+def test_parse_review_without_id():
+    raw = {
+      "globalUserId": "StringID_globalUserId",
+      "nmId": 100222230,
+      "text": "String_Text",
+      "pros": "String_Pros",
+      "cons": "String_Cons",
+      "productValuation": 5,
+      "createdDate": "2025-11-19T09:36:04Z",
+      "votes": {
+        "pluses": 3,
+        "minuses": 0
+      },
+      "statusId": 16,
+      "parentFeedbackId": "StringID_parent",
+      "childFeedbackId": "StringID_child",
+      "excludedFromRating": {
+        "isExcluded": True,
+        "reasons": [
+          "hasIncludedChild"
+        ]
+      }
+    }
+
+    result = parse_review(raw)
+    assert result is None
+
+def test_parse_review_without_nmId():
+    raw = {
+      "id": "StringID_reviewID",
+      "globalUserId": "StringID_globalUserId",
+      "text": "String_Text",
+      "pros": "String_Pros",
+      "cons": "String_Cons",
+      "productValuation": 5,
+      "createdDate": "2025-11-19T09:36:04Z",
+      "votes": {
+        "pluses": 3,
+        "minuses": 0
+      },
+      "statusId": 16,
+      "parentFeedbackId": "StringID_parent",
+      "childFeedbackId": "StringID_child",
+      "excludedFromRating": {
+        "isExcluded": True,
+        "reasons": [
+          "hasIncludedChild"
+        ]
+      }
+    }
+
+    result = parse_review(raw)
+    assert result is None
+
+def test_parse_review_without_createdDate():
+    raw = {
+      "id": "StringID_reviewID",
+      "globalUserId": "StringID_globalUserId",
+      "nmId": 100222230,
+      "text": "String_Text",
+      "pros": "String_Pros",
+      "cons": "String_Cons",
+      "productValuation": 5,
+      "votes": {
+        "pluses": 3,
+        "minuses": 0
+      },
+      "statusId": 16,
+      "parentFeedbackId": "StringID_parent",
+      "childFeedbackId": "StringID_child",
+      "excludedFromRating": {
+        "isExcluded": True,
+        "reasons": [
+          "hasIncludedChild"
+        ]
+      }
+    }
+
+    result = parse_review(raw)
+    assert result is None
+
+def test_parse_review_without_votes():
+    raw = {
+      "id": "StringID_reviewID",
+      "globalUserId": "StringID_globalUserId",
+      "nmId": 100222230,
+      "text": "String_Text",
+      "pros": "String_Pros",
+      "cons": "String_Cons",
+      "productValuation": 5,
+      "createdDate": "2025-11-19T09:36:04Z",
+      "statusId": 16,
+      "parentFeedbackId": "StringID_parent",
+      "childFeedbackId": "StringID_child",
+      "excludedFromRating": {
+        "isExcluded": True,
+        "reasons": [
+          "hasIncludedChild"
+        ]
+      }
+    }
+
+    result = parse_review(raw)
+    assert result["votes_pluses"] == 0
+    assert result["votes_minuses"] == 0
+
+def test_parse_review_without_excludedFromRating():
+    raw = {
+      "id": "StringID_reviewID",
+      "globalUserId": "StringID_globalUserId",
+      "nmId": 100222230,
+      "text": "String_Text",
+      "pros": "String_Pros",
+      "cons": "String_Cons",
+      "productValuation": 5,
+      "createdDate": "2025-11-19T09:36:04Z",
+      "votes": {
+        "pluses": 3,
+        "minuses": 0
+      },
+      "statusId": 16,
+      "parentFeedbackId": "StringID_parent",
+      "childFeedbackId": "StringID_child"
+    }
+
+    result = parse_review(raw)
+    assert result["is_excluded_from_rating"] == False
+
+def test_parse_review_with_empty_text():
+    raw = {
+      "id": "StringID_reviewID",
+      "globalUserId": "StringID_globalUserId",
+      "nmId": 100222230,
+      "text": "",
+      "pros": "",
+      "cons": "",
+      "productValuation": 5,
+      "createdDate": "2025-11-19T09:36:04Z",
+      "votes": {
+        "pluses": 3,
+        "minuses": 0
+      },
+      "statusId": 16,
+      "parentFeedbackId": "StringID_parent",
+      "childFeedbackId": "StringID_child",
+      "excludedFromRating": {
+        "isExcluded": True,
+        "reasons": [
+          "hasIncludedChild"
+        ]
+      }
+    }
+
+    result = parse_review(raw)
+    assert result["text"] is None
+    assert result["pros"] is None
+    assert result["cons"] is None
