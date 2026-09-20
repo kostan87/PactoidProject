@@ -41,14 +41,18 @@ def make_expected_product(**overrides):
         "price_basic": 250.00,
         "price_product": 120.00
     }
-    base.update(overrides)
+    for key, value in overrides.items():
+        if isinstance(value, _Delete):
+            base.pop(key, None)
+        else:
+            base[key] = value
     return base
 
 def make_raw_review(**overrides):
     base = {
         "id": "StringID_reviewID",
         "globalUserId": "StringID_globalUserId",
-        "nmId": 100222230,
+        "nmId": 1,
         "text": "String_Text",
         "pros": "String_Pros",
         "cons": "String_Cons",
@@ -78,7 +82,7 @@ def make_raw_review(**overrides):
 def make_expected_review(**overrides):
     base = {
         "id": "StringID_reviewID",
-        "nm_id": 100222230,
+        "nm_id": 1,
         "text": "String_Text",
         "pros": "String_Pros",
         "cons": "String_Cons",
@@ -92,5 +96,9 @@ def make_expected_review(**overrides):
         "parent_feedback_id": "StringID_parent",
         "child_feedback_id": "StringID_child"
     }
-    base.update(overrides)
+    for key, value in overrides.items():
+        if isinstance(value, _Delete):
+            base.pop(key, None)
+        else:
+            base[key] = value
     return base
