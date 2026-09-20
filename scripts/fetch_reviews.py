@@ -1,14 +1,10 @@
-import sys
-
-import json
-
 import argparse
-
+import json
+import sys
 from pathlib import Path
 
 from curl_cffi import requests
 from curl_cffi.requests.errors import RequestsError
-
 from tenacity import retry, stop_after_attempt, wait_random, retry_if_exception_type
 
 def get_root_from_argv() -> int:

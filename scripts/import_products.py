@@ -1,22 +1,12 @@
-import json
 from pathlib import Path
 
-from app.db import SessionLocal
 from app.parsers.wb_parser import parse_products
 from app.repositories.product_repo import upsert_product
+from utils.files import load_json_file
+from utils.database import process_batch
 
-BASE_DIR = Path(__file__).resolve().parents[1]
-DATA_FILE = BASE_DIR / "app" / "data" / "wb_phones_raw.json"
-
-data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
-
+base_dir = Path(__file__).resolve().parents[1] 
+data_path = base_dir / "app" / "data" / "wb_phones_raw.json"
+data = load_json_file(data_path)
 products = parse_products(data)
-
-with SessionLocal() as session:
-    try:
-        for productData in products:
-            product = upsert_product(session, productData)
-        session.commit()
-    except Exception:
-        session.rollback()
-        raise
+process_batch(products, upsert_product)

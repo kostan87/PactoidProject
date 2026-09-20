@@ -6,7 +6,7 @@ from sqlalchemy import BigInteger, Text, Integer, Numeric, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
-from app.utils.time import utcnow
+from utils.time import utcnow
 
 class Product(Base):
     __tablename__ = "products"

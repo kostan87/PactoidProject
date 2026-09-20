@@ -1,16 +1,15 @@
-import json
 from pathlib import Path
 
 from app.parsers.wb_parser import parse_products
 from app.parsers.wb_parser import parse_reviews
+from utils.files import load_json_file
 
-BASE_DIR = Path(__file__).resolve().parents[1]
-DATA_FILE = BASE_DIR / "app" / "data" / "wb_phones_raw.json"
-data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+base_dir = Path(__file__).resolve().parents[1] / "app" / "data" 
 
-print(parse_products(data))
+data_path = base_dir / "wb_phones_raw.json"
+data = load_json_file(data_path)
+print(parse_products(data)[0])
 
-DATA_FILE = BASE_DIR / "app" / "data" / "wb_reviews_raw.json"
-data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
-
-print(parse_reviews(data))
+data_path = base_dir / "reviews" / "wb_reviews_raw_513853400.json"
+data = load_json_file(data_path)
+print(parse_reviews(data)[0])
