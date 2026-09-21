@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from sqlalchemy import select, inspect
 
-from app.repositories.product_repo import upsert_product
+from app.repositories.wb_product_repo import upsert_wb_product
 
 from app.models.wb_product import WBProduct
 from app.models.price_history import PriceHistory
@@ -13,7 +13,7 @@ from tests.assertions import assert_dict_subset
 def test_repo_product_is_full(session):
     product = make_expected_product()
 
-    upsert_product(session, product)
+    upsert_wb_product(session, product)
     session.flush()
     session.expire_all()
 
@@ -31,23 +31,23 @@ def test_repo_product_is_full(session):
     )
     assert_dict_subset(product_at_db, product_expected)
 
-    price_at_db = session.scalar(select(PriceHistory).where(PriceHistory.product_id == 1))
+    price_at_db = session.scalar(select(PriceHistory).where(PriceHistory.wb_product_id == 1))
     assert price_at_db is not None
 
 def test_repo_product_price_changed(session):
     product1 = make_expected_product(price_basic=500, price_product=350)
     product2 = make_expected_product(price_basic=400, price_product=250)
     
-    upsert_product(session, product1)
+    upsert_wb_product(session, product1)
     session.flush()
-    upsert_product(session, product2)
+    upsert_wb_product(session, product2)
     session.flush()
     session.expire_all()
 
     products_at_db = session.scalars(select(WBProduct).where(WBProduct.id == 1)).all()
     assert len(products_at_db) == 1
 
-    prices_at_db = session.scalars(select(PriceHistory).where(PriceHistory.product_id == 1)).all()
+    prices_at_db = session.scalars(select(PriceHistory).where(PriceHistory.wb_product_id == 1)).all()
     assert len(prices_at_db) == 2
     
     assert {price.price_basic for price in prices_at_db} == {Decimal("500"), Decimal("400")}
@@ -56,16 +56,16 @@ def test_repo_product_price_changed(session):
 def test_repo_product_price_unchanged(session):
     product = make_expected_product(price_basic=500, price_product=350)
 
-    upsert_product(session, product)
+    upsert_wb_product(session, product)
     session.flush()
-    upsert_product(session, product)
+    upsert_wb_product(session, product)
     session.flush()
     session.expire_all()
 
     products_at_db = session.scalars(select(WBProduct).where(WBProduct.id == 1)).all()
     assert len(products_at_db) == 1
 
-    prices_at_db = session.scalars(select(PriceHistory).where(PriceHistory.product_id == 1)).all()
+    prices_at_db = session.scalars(select(PriceHistory).where(PriceHistory.wb_product_id == 1)).all()
     assert len(prices_at_db) == 1
 
 def test_repo_product_without_price_record(session):
@@ -74,12 +74,12 @@ def test_repo_product_without_price_record(session):
     
     product_at_db = WBProduct(**product_without_price)
     session.add(product_at_db)
-    upsert_product(session, product_with_price)
+    upsert_wb_product(session, product_with_price)
     session.flush()
     session.expire_all()
 
     product_at_db = session.get(WBProduct, 1)
     assert product_at_db is not None
 
-    price_at_db = session.scalar(select(PriceHistory).where(PriceHistory.product_id == 1))
+    price_at_db = session.scalar(select(PriceHistory).where(PriceHistory.wb_product_id == 1))
     assert price_at_db is not None

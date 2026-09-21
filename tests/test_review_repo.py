@@ -1,6 +1,6 @@
 from sqlalchemy import select, inspect
 
-from app.repositories.product_repo import upsert_product
+from app.repositories.wb_product_repo import upsert_wb_product
 from app.repositories.review_repo import upsert_review
 
 from app.models.review import Review
@@ -12,7 +12,7 @@ def test_repo_review_is_full(session):
     product = make_expected_product()
     review = make_expected_review()
 
-    upsert_product(session, product)
+    upsert_wb_product(session, product)
     upsert_review(session, review)
     session.flush()
     session.expire_all()
@@ -29,7 +29,7 @@ def test_repo_review_update(session):
     review1 = make_expected_review()
     review2 = make_expected_review(votes_pluses=15, votes_minuses=14)
 
-    upsert_product(session, product)
+    upsert_wb_product(session, product)
     upsert_review(session, review1)
     session.flush()
     upsert_review(session, review2)
@@ -59,10 +59,10 @@ def test_repo_review_changed_nm_id(session):
     review1 = make_expected_review(nm_id=100)
     review2 = make_expected_review(nm_id=200)
 
-    upsert_product(session, product1)
+    upsert_wb_product(session, product1)
     upsert_review(session, review1)
     session.flush()
-    upsert_product(session, product2)
+    upsert_wb_product(session, product2)
     upsert_review(session, review2)
     session.flush()
     session.expire_all()

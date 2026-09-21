@@ -5,11 +5,7 @@ from app.models.wb_product import WBProduct
 from app.models.review import Review
 
 def upsert_review(session:Session, review:dict) -> Review | None:
-    product_at_db = session.scalar(select(WBProduct).where(WBProduct.id == review["nm_id"]))
     review_at_db = session.scalar(select(Review).where(Review.id == review["id"]))
-
-    if product_at_db is None:
-        return None
 
     if review_at_db is None: # INSERT
         review_at_db = Review(**review)
