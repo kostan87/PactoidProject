@@ -16,6 +16,7 @@ def parse_product(raw: dict) -> dict | None:
 
     return {
         "id": wb_id,
+        "root": raw.get("root"),
         "subject_id": raw.get("subjectId"),
         "name": raw.get("name"),
         "brand": brand,
@@ -57,8 +58,9 @@ def parse_review(raw: dict) -> dict | None:
     excluded_from_rating = excluded_from_rating.get("isExcluded") or False
 
     return {
-        "id": review_id,
-        "nm_id": nm_id,
+        "marketplace": "wb",
+        "marketplace_review_id": review_id,
+        "marketplace_product_id": str(nm_id),
         "text": raw.get("text") or None,
         "pros": raw.get("pros") or None,
         "cons": raw.get("cons") or None,
