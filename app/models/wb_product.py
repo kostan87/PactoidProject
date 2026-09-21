@@ -2,17 +2,18 @@ from decimal import Decimal
 
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Text, Integer, Numeric, DateTime
+from sqlalchemy import BigInteger, Text, Integer, Numeric, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
 from utils.time import utcnow
 
-class Product(Base):
-    __tablename__ = "products"
-    prices: Mapped[list["PriceHistory"]] = relationship(back_populates="product")
-    reviews: Mapped[list["Review"]] = relationship(back_populates="product", cascade="all, delete-orphan")
+class WBProduct(Base):
+    __tablename__ = "wb_products"
+
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    root: Mapped[int] = mapped_column(BigInteger, nullable=False, index=True)
+    model_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("models.id", ondelete="SET NULL"), nullable=True)
     name: Mapped[str] = mapped_column(Text)
     brand: Mapped[str | None] = mapped_column(Text, nullable=True)
     supplier: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -24,10 +25,15 @@ class Product(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
+    model: Mapped["Model"] = relationship(back_populates="wb_products")
+    prices: Mapped[list["PriceHistory"]] = relationship(back_populates="wb_product")
+
     def __repr__(self) -> str:
         return (
-            f"<Product("
+            f"<WBProduct("
             f"id={self.id}, "
+            f"root={self.root}, "
+            f"model_id={self.model_id}, "
             f"name={self.name!r}, "
             f"brand={self.brand!r}, "
             f"supplier={self.supplier!r}, "

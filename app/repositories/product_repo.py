@@ -1,12 +1,12 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.product import Product
+from app.models.wb_product import WBProduct
 from app.models.price_history import PriceHistory
 
-def upsert_product(session:Session, product:dict) -> Product | None:
+def upsert_product(session:Session, product:dict) -> WBProduct | None:
     current_product = {key:value for key,value in product.items() if key not in ("price_basic", "price_product")}
-    product_at_db = session.scalar(select(Product).where(Product.id == product["id"]))
+    product_at_db = session.scalar(select(WBProduct).where(WBProduct.id == product["id"]))
     latest_price = session.scalar(
         select(PriceHistory)
         .where(PriceHistory.product_id == product["id"])
@@ -18,7 +18,7 @@ def upsert_product(session:Session, product:dict) -> Product | None:
     )
 
     if product_at_db is None: # INSERT
-        product_at_db = Product(**current_product)
+        product_at_db = WBProduct(**current_product)
         product_at_db.prices.append(current_price)
         session.add(product_at_db)
     else: # UPDATE

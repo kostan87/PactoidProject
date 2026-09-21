@@ -4,7 +4,7 @@ from sqlalchemy import select, inspect
 
 from app.repositories.product_repo import upsert_product
 
-from app.models.product import Product
+from app.models.wb_product import WBProduct
 from app.models.price_history import PriceHistory
 
 from tests.factories import DELETE, make_expected_product
@@ -17,10 +17,10 @@ def test_repo_product_is_full(session):
     session.flush()
     session.expire_all()
 
-    product_at_db = session.get(Product, 1)
+    product_at_db = session.get(WBProduct, 1)
     assert product_at_db is not None
 
-    mapper = inspect(Product).mapper
+    mapper = inspect(WBProduct).mapper
     product_at_db = {col.key: getattr(product_at_db, col.key) for col in mapper.columns}
     product_expected = make_expected_product(
         supplier_rating=Decimal("4.5"),
@@ -44,7 +44,7 @@ def test_repo_product_price_changed(session):
     session.flush()
     session.expire_all()
 
-    products_at_db = session.scalars(select(Product).where(Product.id == 1)).all()
+    products_at_db = session.scalars(select(WBProduct).where(WBProduct.id == 1)).all()
     assert len(products_at_db) == 1
 
     prices_at_db = session.scalars(select(PriceHistory).where(PriceHistory.product_id == 1)).all()
@@ -62,7 +62,7 @@ def test_repo_product_price_unchanged(session):
     session.flush()
     session.expire_all()
 
-    products_at_db = session.scalars(select(Product).where(Product.id == 1)).all()
+    products_at_db = session.scalars(select(WBProduct).where(WBProduct.id == 1)).all()
     assert len(products_at_db) == 1
 
     prices_at_db = session.scalars(select(PriceHistory).where(PriceHistory.product_id == 1)).all()
@@ -72,13 +72,13 @@ def test_repo_product_without_price_record(session):
     product_without_price = make_expected_product(price_basic=DELETE, price_product=DELETE)
     product_with_price = make_expected_product(price_basic=500, price_product=350)
     
-    product_at_db = Product(**product_without_price)
+    product_at_db = WBProduct(**product_without_price)
     session.add(product_at_db)
     upsert_product(session, product_with_price)
     session.flush()
     session.expire_all()
 
-    product_at_db = session.get(Product, 1)
+    product_at_db = session.get(WBProduct, 1)
     assert product_at_db is not None
 
     price_at_db = session.scalar(select(PriceHistory).where(PriceHistory.product_id == 1))

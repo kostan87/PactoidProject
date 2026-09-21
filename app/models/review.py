@@ -1,15 +1,21 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Text, Integer, DateTime, Boolean, ForeignKey
+from sqlalchemy import BigInteger, Text, Integer, DateTime, Boolean, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
 
 class Review(Base):
     __tablename__ = "reviews"
-    product: Mapped["Product"] = relationship(back_populates="reviews")
-    id: Mapped[str] = mapped_column(Text, primary_key=True, autoincrement=False)
-    nm_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("products.id", ondelete="CASCADE"))
+    __table_args__ = (
+        UniqueConstraint("marketplace", "marketplace_review_id", name="uq_marketplace_review"),
+    )
+    
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    model_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("models.id", ondelete="SET NULL"), nullable=True)
+    marketplace: Mapped[str] = mapped_column(Text, nullable=False)
+    marketplace_review_id: Mapped[str] = mapped_column(Text, nullable=False)
+    marketplace_product_id : Mapped[str] = mapped_column(Text, nullable=False)
     text: Mapped[str | None] = mapped_column(Text, nullable=True)
     pros: Mapped[str | None] = mapped_column(Text, nullable=True)
     cons: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -23,11 +29,16 @@ class Review(Base):
     parent_feedback_id: Mapped[str | None] = mapped_column(Text, nullable=True)
     child_feedback_id: Mapped[str | None] = mapped_column(Text, nullable=True)
 
+    model: Mapped["Model"] = relationship(back_populates="reviews")
+
     def __repr__(self) -> str:
         return (
             f"<Review("
             f"id={self.id!r}, "
-            f"nm_id={self.nm_id}, "
+            f"model_id={self.model_id!r}, "
+            f"marketplace={self.marketplace!r}, "
+            f"marketplace_review_id={self.marketplace_review_id!r}, "
+            f"marketplace_product_id={self.marketplace_product_id!r}, "
             f"text={self.text!r}, "
             f"pros={self.pros!r}, "
             f"cons={self.cons!r}, "
