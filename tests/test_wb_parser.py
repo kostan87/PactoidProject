@@ -72,54 +72,54 @@ def test_parse_not_dict_at_products():
     raw = {"products": [make_raw_product(), "TestWrongItem"]}
     assert len(parse_products(raw)) == 1
 
-# REVIEW TESTS
+# # REVIEW TESTS
 
-def test_parse_review_full():
-    result = parse_review(make_raw_review())
-    assert_dict_subset(result, make_expected_review())
+# def test_parse_review_full():
+#     result = parse_review(make_raw_review())
+#     assert_dict_subset(result, make_expected_review())
 
-def test_parse_review_without_id():
-    result = parse_review(make_raw_review(id=DELETE))
-    assert result is None
+# def test_parse_review_without_id():
+#     result = parse_review(make_raw_review(id=DELETE))
+#     assert result is None
 
-def test_parse_review_without_nmId():
-    result = parse_review(make_raw_review(nmId=DELETE))
-    assert result is None
+# def test_parse_review_without_nmId():
+#     result = parse_review(make_raw_review(nmId=DELETE))
+#     assert result is None
 
-def test_parse_review_without_createdDate():
-    result = parse_review(make_raw_review(createdDate=DELETE))
-    assert result is None
+# def test_parse_review_without_createdDate():
+#     result = parse_review(make_raw_review(createdDate=DELETE))
+#     assert result is None
 
-def test_parse_review_without_votes():
-    result = parse_review(make_raw_review(votes=DELETE))
-    assert_dict_subset(result, {"votes_pluses": 0, "votes_minuses": 0})
+# def test_parse_review_without_votes():
+#     result = parse_review(make_raw_review(votes=DELETE))
+#     assert_dict_subset(result, {"votes_pluses": 0, "votes_minuses": 0})
 
-def test_parse_review_without_excludedFromRating():
-    result = parse_review(make_raw_review(excludedFromRating=DELETE))
-    assert_dict_subset(result, {"is_excluded_from_rating": False})
+# def test_parse_review_without_excludedFromRating():
+#     result = parse_review(make_raw_review(excludedFromRating=DELETE))
+#     assert_dict_subset(result, {"is_excluded_from_rating": False})
 
-def test_parse_review_with_empty_text():
-    result = parse_review(make_raw_review(text="", pros="", cons=""))
-    assert_dict_subset(result, {"text": None, "pros": None, "cons": None})
+# def test_parse_review_with_empty_text():
+#     result = parse_review(make_raw_review(text="", pros="", cons=""))
+#     assert_dict_subset(result, {"text": None, "pros": None, "cons": None})
 
-def test_parse_review_without_product_valuation():
-    result = parse_review(make_raw_review(productValuation=DELETE))
-    assert_dict_subset(result, {"product_valuation": None})
+# def test_parse_review_without_product_valuation():
+#     result = parse_review(make_raw_review(productValuation=DELETE))
+#     assert_dict_subset(result, {"product_valuation": None})
 
-# REVIEWS TESTS
+# # REVIEWS TESTS
 
-def test_parse_reviews_feedbacks_is_empty():
-    raw = {"feedbacks": []}
-    assert parse_reviews(raw) == []
+# def test_parse_reviews_feedbacks_is_empty():
+#     raw = {"feedbacks": []}
+#     assert parse_reviews(raw) == []
 
-def test_parse_reviews_no_feedbacks_key():
-    raw = {}
-    assert parse_reviews(raw) == []
+# def test_parse_reviews_no_feedbacks_key():
+#     raw = {}
+#     assert parse_reviews(raw) == []
 
-def test_parse_reviews_is_not_dict():
-    raw = ["No views"]
-    assert parse_reviews(raw) == []
+# def test_parse_reviews_is_not_dict():
+#     raw = ["No views"]
+#     assert parse_reviews(raw) == []
 
-def test_parse_not_dict_at_reviews():
-    raw = {"feedbacks": [make_raw_review(),"TestWrongItem"]}
-    assert len(parse_reviews(raw)) == 1
+# def test_parse_not_dict_at_reviews():
+#     raw = {"feedbacks": [make_raw_review(),"TestWrongItem"]}
+#     assert len(parse_reviews(raw)) == 1

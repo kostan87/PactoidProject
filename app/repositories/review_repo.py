@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.product import Product
-from app.models.review import Review
+from app.models.database.product import Product
+from app.models.database.review import Review
 
 def upsert_review(session:Session, review:dict) -> Review | None:
     review_at_db = session.scalar(select(Review).where(Review.id == review["id"]))

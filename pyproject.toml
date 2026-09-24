@@ -13,6 +13,11 @@ dependencies = [
     "redis>=5.0.0",
     "python-dotenv>=1.0.0",
     "curl-cffi>=0.16.3",
+    "pydantic>=2.13.5",
+    "instructor>=1.17.0",
+    "openai>=3.3.0",
+    "pymorphy3>=2.0.6",
+    "pymorphy3-dicts-ru>=2.4.417150.4580142",
 ]
 
 [dependency-groups]
