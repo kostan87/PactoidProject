@@ -10,9 +10,9 @@ from utils.time import utcnow
 
 class Product(Base):
     __tablename__ = "products"
-    prices: Mapped[list["PriceHistory"]] = relationship(back_populates="product")
-    reviews: Mapped[list["Review"]] = relationship(back_populates="product", cascade="all, delete-orphan")
+    
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    root: Mapped[int] = mapped_column(BigInteger, index=True)
     name: Mapped[str] = mapped_column(Text)
     brand: Mapped[str | None] = mapped_column(Text, nullable=True)
     supplier: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -24,10 +24,13 @@ class Product(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 
+    prices: Mapped[list["PriceHistory"]] = relationship(back_populates="product")
+
     def __repr__(self) -> str:
         return (
             f"<Product("
             f"id={self.id}, "
+            f"root={self.root}, "
             f"name={self.name!r}, "
             f"brand={self.brand!r}, "
             f"supplier={self.supplier!r}, "

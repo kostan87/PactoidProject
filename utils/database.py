@@ -9,7 +9,10 @@ def process_batch(
         action: Callable[[Session, dict], None],
         session_factory=SessionLocal
     ) -> None:
-    with SessionLocal() as session:
-        with session_factory.begin() as session:
-            for item in data:
-                action(session, item)
+    total = len(data)
+    saved = 0
+    with session_factory.begin() as session:
+        for item in data:
+            if action(session, item) is not None:
+                saved += 1
+    print(f"saved {saved}/{total}")

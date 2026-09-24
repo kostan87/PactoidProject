@@ -8,7 +8,8 @@ from utils.database import process_batch
 base_dir = Path(__file__).resolve().parents[1] 
 data_path = base_dir / "app" / "data" / "reviews"
 for path in data_path.glob("*.json"):
+    root = int(path.stem.split("_")[-1])
     data = load_json_file(path)
-    products = parse_reviews(data)
-    process_batch(products, upsert_review)
+    products = parse_reviews(data, root)
     print(path.name)
+    process_batch(products, upsert_review)

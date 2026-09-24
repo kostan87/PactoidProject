@@ -2,7 +2,8 @@ from datetime import datetime
 
 def parse_product(raw: dict) -> dict | None:
     wb_id = raw.get("id")
-    if not wb_id:
+    root = raw.get("root")
+    if not wb_id or not root:
         return None
     
     brand = raw.get("brand") or None
@@ -16,6 +17,7 @@ def parse_product(raw: dict) -> dict | None:
 
     return {
         "id": wb_id,
+        "root": root,
         "subject_id": raw.get("subjectId"),
         "name": raw.get("name"),
         "brand": brand,
@@ -40,7 +42,7 @@ def parse_products(data: dict) -> list[dict]:
                 products.append(parsed_product)
     return products
 
-def parse_review(raw: dict) -> dict | None:
+def parse_review(raw: dict, root: int) -> dict | None:
     review_id = raw.get("id") or None
     nm_id = raw.get("nmId") or None
     created_date = raw.get("createdDate") or None
@@ -58,6 +60,7 @@ def parse_review(raw: dict) -> dict | None:
 
     return {
         "id": review_id,
+        "root": root,
         "nm_id": nm_id,
         "text": raw.get("text") or None,
         "pros": raw.get("pros") or None,
@@ -73,14 +76,14 @@ def parse_review(raw: dict) -> dict | None:
         "child_feedback_id": raw.get("childFeedbackId") or None
     }
 
-def parse_reviews(data: dict) -> list[dict]:
+def parse_reviews(data: dict, root: int) -> list[dict]:
     if not isinstance(data, dict):
         return []
 
     reviews = []
     for review in (data.get("feedbacks") or []):
         if isinstance(review, dict):
-            parsed_review = parse_review(review)
+            parsed_review = parse_review(review, root)
             if parsed_review is not None:
                 reviews.append(parsed_review)
     return reviews

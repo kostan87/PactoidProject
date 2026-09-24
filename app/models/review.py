@@ -7,9 +7,10 @@ from app.db import Base
 
 class Review(Base):
     __tablename__ = "reviews"
-    product: Mapped["Product"] = relationship(back_populates="reviews")
+    
     id: Mapped[str] = mapped_column(Text, primary_key=True, autoincrement=False)
-    nm_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("products.id", ondelete="CASCADE"))
+    root: Mapped[int] = mapped_column(BigInteger, index=True)
+    nm_id: Mapped[int] = mapped_column(BigInteger)
     text: Mapped[str | None] = mapped_column(Text, nullable=True)
     pros: Mapped[str | None] = mapped_column(Text, nullable=True)
     cons: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -22,11 +23,12 @@ class Review(Base):
     is_excluded_from_rating: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     parent_feedback_id: Mapped[str | None] = mapped_column(Text, nullable=True)
     child_feedback_id: Mapped[str | None] = mapped_column(Text, nullable=True)
-
+    
     def __repr__(self) -> str:
         return (
             f"<Review("
             f"id={self.id!r}, "
+            f"root={self.root!r}, "
             f"nm_id={self.nm_id}, "
             f"text={self.text!r}, "
             f"pros={self.pros!r}, "

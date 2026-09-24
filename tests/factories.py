@@ -10,6 +10,7 @@ DELETE = _Delete()
 def make_raw_product(**overrides):
     base = {
         "id": 1,
+        "root": 153,
         "subjectId": 165,
         "name": "TestProductName",
         "brand": "TestBrandBrand",
@@ -30,6 +31,7 @@ def make_raw_product(**overrides):
 def make_expected_product(**overrides):
     base = {
         "id": 1,
+        "root": 153,
         "subject_id": 165,
         "name": "TestProductName",
         "brand": "TestBrandBrand",
@@ -82,6 +84,7 @@ def make_raw_review(**overrides):
 def make_expected_review(**overrides):
     base = {
         "id": "StringID_reviewID",
+        "root": 153,
         "nm_id": 1,
         "text": "String_Text",
         "pros": "String_Pros",
