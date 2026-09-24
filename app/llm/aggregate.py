@@ -1,6 +1,6 @@
 from collections import Counter
 
-from app.llm.models import Aspect
+from app.models.review_analysis import Aspect
 
 def aggregate(aspects: list[Aspect]) -> dict:
     stats = {}

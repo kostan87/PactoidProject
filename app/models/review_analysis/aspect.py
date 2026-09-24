@@ -17,11 +17,3 @@ class Aspect(BaseModel):
     type: Literal["defect", "advantage", "neutral"]
     sentiment: Literal["positive", "negative", "neutral"]
     detail: str = Field(description="Цитата или суть, до 12 слов. Сохраняй временные маркеры.")
-
-class ReviewAnalysis(BaseModel):
-    aspects: list[Aspect]
-    summary: str
-    overall_sentiment: Literal["positive", "negative", "mixed", "neutral"]
-
-class BatchAnalysis(BaseModel):
-    results: list[ReviewAnalysis]

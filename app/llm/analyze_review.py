@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from utils.files import load_config
-from app.llm.models import ReviewAnalysis, BatchAnalysis
+from app.models.review_analysis import ReviewAnalysis, BatchAnalysis
 from app.llm.client import create_client, create_chat
 
 def analyze_review(review_text: str) -> ReviewAnalysis:
