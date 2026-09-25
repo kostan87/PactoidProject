@@ -4,8 +4,7 @@ from sqlalchemy import select, func
 
 from app.db import SessionLocal
 from app.models.database.review import Review
-from app.models.review_analysis.batch_analysis import BatchAnalysis
-from utils.text import build_review_text, review_hash
+from app.llm.review_analysis import build_review_text
 
 with SessionLocal.begin() as session:
     reviews = session.scalars(select(Review).where(
@@ -14,11 +13,11 @@ with SessionLocal.begin() as session:
             ((Review.cons != "NULL") & (func.length(Review.cons) > 10)) | 
             ((Review.pros != "NULL") & (func.length(Review.pros) > 10))
         )
-    ).limit(2)).all()
+    ).limit(5)).all()
 
     reviews = [build_review_text(review) for review in reviews]
 
-results = analyze_batch(reviews)
-print(f"\n{reviews}\n→")
-for review in results:
-    print(review.model_dump_json(indent=2))
+    print(f"\n{reviews}\n→")
+    results = analyze_batch(reviews)
+    for review in results:
+        print(review.model_dump_json(indent=1))

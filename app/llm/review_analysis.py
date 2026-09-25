@@ -16,3 +16,13 @@ def aggregate(aspects: list[Aspect]) -> dict:
         elif a.type == "advantage":
             stats[key]["advantages"].append(a.detail)
     return stats
+
+def build_review_text(review: dict) -> str:
+    parts = [f"[ID: {review.id}]"]
+    if review.text:
+        parts.append(review.text.strip())
+    if review.pros:
+        parts.append(f"Плюсы: {review.pros.strip()}")
+    if review.cons:
+        parts.append(f"Минусы: {review.cons.strip()}")
+    return "\n".join(parts) if parts else "(пусто)"
