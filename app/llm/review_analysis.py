@@ -3,8 +3,7 @@ import time
 from threading import Event
 from collections import Counter
 
-from sqlalchemy import select, func
-from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from app.db import SessionLocal
 from app.models.database import Review, ReviewAnalysisCache
@@ -39,13 +38,7 @@ def build_review_text(review: dict) -> str:
 
 def get_reviews_from_db(count: str) -> list[Review]:
     with SessionLocal.begin() as session:
-        reviews = session.scalars(select(Review).where(
-            (Review.root == 513853400) & (
-                ((Review.text != "NULL") & (func.length(Review.text) > 30)) |
-                ((Review.cons != "NULL") & (func.length(Review.cons) > 10)) | 
-                ((Review.pros != "NULL") & (func.length(Review.pros) > 10))
-            )
-        ).limit(count)).all()
+        reviews = session.scalars(select(Review).where(Review.root == 513853400).limit(count)).all()
     return reviews
 
 def remove_cached_reviews(reviews: list[Review]) -> list[Review]:
