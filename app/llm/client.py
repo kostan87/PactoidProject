@@ -7,7 +7,7 @@ from instructor import Instructor
 from openai import OpenAI
 from pydantic import BaseModel
 
-from utils.files import load_config
+from utils.files import load_config, llm_cache
 
 ModelType = TypeVar("T", bound=BaseModel)
 
@@ -23,6 +23,7 @@ def create_client() -> Instructor:
         mode=instructor.Mode.JSON,
     )
 
+@llm_cache
 def create_chat(client: Instructor, messages: list[dict], response_model: type[ModelType]) -> ModelType:
     DIR_PATH = Path(__file__).resolve().parent
     config = load_config(DIR_PATH / "config.toml")
