@@ -1,30 +1,14 @@
 import sys
 import time
 from threading import Event
-from collections import Counter
 
 from sqlalchemy import select
 
 from app.db import SessionLocal
 from app.models.database import Review, ReviewAnalysisCache
-from app.models.review_analysis import Aspect, ReviewAnalysis
+from app.models.review_analysis import ReviewAnalysis
 from app.repositories.review_analysis_repo import upsert_review_analysis_cache
 from app.llm.analyze_batch import analyze_batch
-
-def aggregate(aspects: list[Aspect]) -> dict:
-    stats = {}
-    for a in aspects:
-        key = a.aspect
-        stats.setdefault(key, {"pos": 0, "neg": 0, "defects": [], "advantages": []})
-        if a.sentiment == "positive":
-            stats[key]["pos"] += 1
-        elif a.sentiment == "negative":
-            stats[key]["neg"] += 1
-        if a.type == "defect":
-            stats[key]["defects"].append(a.detail)
-        elif a.type == "advantage":
-            stats[key]["advantages"].append(a.detail)
-    return stats
 
 def build_review_text(review: dict) -> str:
     parts = [f"[ID: {review.id}]"]
@@ -38,8 +22,8 @@ def build_review_text(review: dict) -> str:
 
 def get_reviews_from_db(count: str) -> list[Review]:
     with SessionLocal.begin() as session:
-        reviews = session.scalars(select(Review).where(Review.root == 513853400).limit(count)).all()
-    return reviews
+        result = session.scalars(select(Review).where(Review.root == 513853400).limit(count)).all()
+    return result
 
 def remove_cached_reviews(reviews: list[Review]) -> list[Review]:
     with SessionLocal.begin() as session:

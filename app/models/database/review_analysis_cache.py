@@ -19,10 +19,10 @@ class ReviewAnalysisCache(Base):
     def __repr__(self) -> str:
         return (
             f"<ReviewAnalysisCache("
-            f"id={self.hash!r}, "
-            f"aspects={self.analysis!r}, "
-            f"summary={self.analysis!r}, "
-            f"overall_sentiment={self.analysis!r}, "
+            f"id={self.id!r}, "
+            f"aspects={self.aspects!r}, "
+            f"summary={self.summary!r}, "
+            f"overall_sentiment={self.overall_sentiment!r}, "
             f"created_at={self.created_at!r}"
             f")>"
         )
