@@ -9,8 +9,7 @@ def analyze_batch(reviews: list[str]) -> list[ReviewAnalysis]:
     config_prompt = load_config(DIR_PATH / "config_prompts.toml")
 
     batch_prompt = config_prompt["batch_prompt"]
-    numbered = "\n".join(f"[{i+1}] {r}" for i, r in enumerate(reviews))
-    user_message = batch_prompt + numbered
+    user_message = batch_prompt + "\n".join(reviews)
     
     system_prompt = config_prompt["prompt"]
     few_shot = config_prompt["few_shot"]
