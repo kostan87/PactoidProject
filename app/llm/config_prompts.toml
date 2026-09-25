@@ -17,6 +17,8 @@ prompt = """Ты анализируешь отзывы на смартфоны �
 8. Если отзыв не содержит информации о товаре или услуге (криптовалюта, личные обстоятельства, "рекомендую" без деталей) → aspects=[], overall_sentiment=neutral.
 9. НЕ подставляй аспекты ради заполнения. Лучше пустой список, чем выдуманный аспект.
 10. Не выдумывай то, чего нет в тексте.
+11. Ты всегда возвращаешь JSON строго вида: {"results": [ <анализ каждого отзыва> ]}
+12. Даже если отзыв один — всё равно оборачивай в "results" как массив из одного элемента.
 """
 
 batch_prompt = """Проанализируй каждый отзыв отдельно и верни массив результатов. Возьми ID указанный перед отзывом как [ID: SOME_ID] и сохрани это значение в поле id каждого результата.
@@ -28,106 +30,119 @@ batch_prompt = """Проанализируй каждый отзыв отдел�
 [[few_shot]]
 input = "[ID: tReQKpmVGy5VfKnzPqFP] Звук пропал через 5 месяцев"
 output = """{
-   "id": "tReQKpmVGy5VfKnzPqFP",
-   "aspects": [
+   "results": [
       {
-         "aspect":"звук",
-         "type":"defect",
-         "sentiment":"negative",
-         "detail":"пропал через 5 месяцев"
+         "id": "tReQKpmVGy5VfKnzPqFP",
+         "aspects": [
+            {
+               "aspect":"звук",
+               "type":"defect",
+               "sentiment":"negative",
+               "detail":"пропал через 5 месяцев"
+            }
+         ],
+         "summary": "Через 5 месяцев пропал звук",
+         "overall_sentiment": "negative"
       }
-   ],
-   "summary": "Через 5 месяцев пропал звук",
-   "overall_sentiment": "negative"
+   ]
 }"""
 
 # 2. Mixed: defect комплектации + advantage цены
 [[few_shot]]
 input = "[ID: Togduyz4KAyv8ufwUgPG] Нет родной зарядки, но за такую цену шик"
 output = """{
-   "id": "Togduyz4KAyv8ufwUgPG",
-   "aspects": [
+   "results": [
       {
-         "aspect": "комплектация",
-         "type": "defect",
-         "sentiment": "negative",
-         "detail": "нет родной зарядки"
+         "id": "Togduyz4KAyv8ufwUgPG",
+         "aspects": [
+            {
+               "aspect": "комплектация",
+               "type": "defect",
+               "sentiment": "negative",
+               "detail": "нет родной зарядки"
+            },
+            {
+               "aspect": "цена",
+               "type": "advantage",
+               "sentiment": "positive",
+               "detail": "за такую цену шик"
+            }
+         ],
+         "summary": "Нет зарядки в комплекте, но цена оправдывает",
+         "overall_sentiment": "mixed"
+      }
+   ]
+}"""
+
+# 3. Сервисный отзыв + оффтоп + несколько отзывов
+[[few_shot]]
+input = """[ID: hManf2EwIPpc2EfPsw87] Не рекомендую! Продавец на связь не выходит, заявку на брак отклонили, отправив в сервис.
+[ID: YVhvxZif9dwhvmnPWKo1] Деньги приносит в криптовалюте а это главное"""
+output = """{
+   "results": [
+      {
+         "id": "hManf2EwIPpc2EfPsw87",
+         "aspects": [
+            {
+               "aspect": "продавец",
+               "type": "defect",
+               "sentiment": "negative",
+               "detail": "на связь не выходит, заявку отклонил"
+            },
+            {
+               "aspect": "сервис",
+               "type": "defect",
+               "sentiment": "negative",
+               "detail": "отправили в сервис по браку"
+            }
+         ],
+         "summary": "Продавец игнорирует, брак отправили в сервис",
+         "overall_sentiment": "negative"
       },
       {
-         "aspect": "цена",
-         "type": "advantage",
-         "sentiment": "positive",
-         "detail": "за такую цену шик"
+         "id": "YVhvxZif9dwhvmnPWKo1",
+         "aspects": [],
+         "summary": "Отзыв не о товаре",
+         "overall_sentiment": "neutral"
       }
-   ],
-   "summary": "Нет зарядки в комплекте, но цена оправдывает",
-   "overall_sentiment": "mixed"
+   ]
 }"""
 
-# 3. Сервисный отзыв
-[[few_shot]]
-input = "[ID: hManf2EwIPpc2EfPsw87] Не рекомендую! Продавец на связь не выходит, заявку на брак отклонили, отправив в сервис."
-output = """{
-   "id": "hManf2EwIPpc2EfPsw87",
-   "aspects": [
-      {
-         "aspect": "продавец",
-         "type": "defect",
-         "sentiment": "negative",
-         "detail": "на связь не выходит, заявку отклонил"
-      },
-      {
-         "aspect": "сервис",
-         "type": "defect",
-         "sentiment": "negative",
-         "detail": "отправили в сервис по браку"
-      }
-   ],
-   "summary": "Продавец игнорирует, брак отправили в сервис",
-   "overall_sentiment": "negative"
-}"""
-
-# 4. Оффтоп → пустой список
-[[few_shot]]
-input = "[ID: YVhvxZif9dwhvmnPWKo1] Деньги приносит в криптовалюте а это главное"
-output = """{
-   "id": "YVhvxZif9dwhvmnPWKo1",
-   "aspects": [],
-   "summary": "Отзыв не о товаре",
-   "overall_sentiment": "neutral"
-}"""
-
-# 5. Много аспектов, positive
+# 4. Много аспектов, positive
 [[few_shot]]
 input = "[ID: 31UY7ouBQ2BDqXZedI97] Понравилось всё, покупала мужу на подарок, за такую стоимость, не глючит, звук громкий, камера хорошая"
 output = """{
-   "id": "31UY7ouBQ2BDqXZedI97",
-   "aspects": [
+   "results": [
       {
-         "aspect": "цена",
-         "type": "advantage",
-         "sentiment": "positive",
-         "detail": "за такую стоимость"
-      },
-      {
-         "aspect": "софт",
-         "type": "advantage",
-         "sentiment": "positive",
-         "detail": "не глючит"
-      },
-      {
-         "aspect": "звук",
-         "type": "advantage",
-         "sentiment": "positive",
-         "detail": "звук громкий"
-      },
-      {
-         "aspect": "камера",
-         "type": "advantage",
-         "sentiment": "positive",
-         "detail": "камера хорошая"
+         "id": "31UY7ouBQ2BDqXZedI97",
+         "aspects": [
+            {
+               "aspect": "цена",
+               "type": "advantage",
+               "sentiment": "positive",
+               "detail": "за такую стоимость"
+            },
+            {
+               "aspect": "софт",
+               "type": "advantage",
+               "sentiment": "positive",
+               "detail": "не глючит"
+            },
+            {
+               "aspect": "звук",
+               "type": "advantage",
+               "sentiment": "positive",
+               "detail": "звук громкий"
+            },
+            {
+               "aspect": "камера",
+               "type": "advantage",
+               "sentiment": "positive",
+               "detail": "камера хорошая"
+            }
+         ],
+         "summary": "Доволен ценой, софтом, звуком и камерой",
+         "overall_sentiment": "positive"
       }
-   ],
-   "summary": "Доволен ценой, софтом, звуком и камерой",
-   "overall_sentiment": "positive"
+   ]
 }"""
