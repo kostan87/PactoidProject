@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Товары</title>
+</head>
+<body>
+    <h1>Товары</h1>
+    <ul>
+        {% for product in products %}
+            <li>{{ product.name }} — {{ product.brand }} — рейтинг: {{ product.rating }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

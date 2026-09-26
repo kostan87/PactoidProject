@@ -27,3 +27,6 @@ def upsert_product(session:Session, product:dict) -> Product | None:
         if latest_price is None or (current_price.price_basic != latest_price.price_basic or current_price.price_product != latest_price.price_product):
             product_at_db.prices.append(current_price)
     return product_at_db
+
+def load_products_from_db(session: Session, count: int = 100) -> list[Product]:
+    return session.scalars(select(Product).limit(count)).all()

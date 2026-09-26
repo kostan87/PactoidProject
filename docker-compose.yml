@@ -37,6 +37,23 @@ services:
     volumes:
       - redis_data:/data
 
+  web:
+    build: .
+    container_name: pactoid_web
+    volumes:
+      - .:/app
+      - /app/.venv
+    environment:
+      - DATABASE_URL=postgresql+psycopg://pactoid:pactoid_pass@postgres:5432/pactoid_db
+      - REDIS_URL=redis://redis:6379/0
+      - OLLAMA_URL=http://host.docker.internal:11434
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    command: uv run uvicorn app.web.main:app --host 0.0.0.0 --port 8000 --reload
+
 volumes:
   postgres_data:
   redis_data:
