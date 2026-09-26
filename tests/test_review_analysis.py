@@ -3,9 +3,8 @@ import pytest
 
 from tests.factories import DELETE, make_expected_review
 from app.models.database import Review, ReviewAnalysisCache
-from app.models.review_analysis import Aspect, ReviewAnalysis, BatchAnalysis
-from app.llm.review_analysis import build_review_text, form_messages_for_analysis, get_reviews_from_db, remove_cached_reviews, analyze_reviews_batches
-from app.repositories.review_analysis_repo import upsert_review_analysis_cache
+from app.llm.review_analysis import build_review_text
+from app.repositories.review_repo import upsert_review_analysis_cache, get_reviews_from_db, remove_cached_reviews
 
 def test_build_review_text_full_review():
     review = Review(**make_expected_review())
