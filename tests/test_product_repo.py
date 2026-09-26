@@ -3,10 +3,8 @@ from decimal import Decimal
 from sqlalchemy import select, inspect
 
 from app.repositories.product_repo import upsert_product
-
-from app.models.product import Product
-from app.models.price_history import PriceHistory
-
+from app.models.database.product import Product
+from app.models.database.price_history import PriceHistory
 from tests.factories import DELETE, make_expected_product
 from tests.assertions import assert_dict_subset
 

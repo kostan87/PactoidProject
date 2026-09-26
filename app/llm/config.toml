@@ -1,0 +1,5 @@
+# Настройки ИИ модели
+llm_url = "http://host.docker.internal:11434/v1"
+llm_api_key = "ollama"
+llm_model = "Qwen2.5-7B-Instruct-Q4_K_M:latest"
+llm_temperature = 0.1
