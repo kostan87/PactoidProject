@@ -4,12 +4,11 @@ import threading
 from pathlib import Path
 from threading import Event
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.database import Review, ReviewAnalysisCache
-from app.models.review_analysis import ReviewAnalysis, BatchAnalysis
-from app.repositories.review_analysis_repo import upsert_review_analysis_cache
+from app.models.database import Review
+from app.models.review_analysis import BatchAnalysis
+from app.repositories.review_repo import save_reviews_analysis_to_db
 from app.llm.client import create_client, create_chat
 from utils.files import load_config
 
@@ -40,16 +39,6 @@ def form_messages_for_analysis(reviews: list[str]) -> list[dict]:
         messages.append({"role": "assistant", "content": example["output"]})
     messages.append({"role": "user", "content": user_message})
     return messages
-
-def get_reviews_from_db(session: Session, root: int, count: str) -> list[Review]:
-    return session.scalars(select(Review).where(Review.root == root).limit(count)).all()
-
-def remove_cached_reviews(session: Session, reviews: list[Review]) -> list[Review]:
-    return [r for r in reviews if (session.get(ReviewAnalysisCache, r.id) is None)]
-
-def save_reviews_analysis_to_db(session: Session, results: list[ReviewAnalysis]) -> None:
-    for result in results:
-        upsert_review_analysis_cache(session, result.model_dump())
 
 def analyze_reviews_batches(session: Session, reviews_batches: list[list[str]]) -> None:
     batch_complited = threading.Event()

@@ -1,5 +1,6 @@
 from app.db import SessionLocal
-from app.llm.review_analysis import build_review_text, get_reviews_from_db, remove_cached_reviews, analyze_reviews_batches
+from app.repositories.review_repo import get_reviews_from_db, remove_cached_reviews
+from app.llm.review_analysis import build_review_text, analyze_reviews_batches
 
 with SessionLocal() as session:
     reviews_from_db = get_reviews_from_db(session, 513853400, 500)
