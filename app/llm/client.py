@@ -19,6 +19,7 @@ def create_client() -> Instructor:
         OpenAI(
             base_url=config["llm_url"],
             api_key=config["llm_api_key"],
+            max_retries=5,
         ),  
         mode=instructor.Mode.JSON,
     )
