@@ -1,4 +1,4 @@
-from sqlalchemy import select, inspect
+from sqlalchemy import select, inspect, desc
 from sqlalchemy.orm import Session
 from fastapi import FastAPI, Depends, Request
 from fastapi.templating import Jinja2Templates
@@ -22,7 +22,7 @@ def index():
 @app.get("/products")
 def products_list(request: Request, session: Session = Depends(get_session)):
     templates = Jinja2Templates(directory="app/web/templates")
-    products = get_products_from_db(session, 1000)
+    products = get_products_from_db(session, count=1000, order_by=desc(Product.feedbacks_count))
     return templates.TemplateResponse(request, "products.html", {"products": products})
 
 @app.get("/products/{root}")

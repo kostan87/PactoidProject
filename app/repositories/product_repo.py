@@ -41,8 +41,10 @@ def upsert_product_analysis_cache(session: Session, product_analysis: dict) -> P
             setattr(product_analysis_at_db, key, value)
     return product_analysis
 
-def get_products_from_db(session: Session, count: Optional[int] = None) -> list[Product]:
+def get_products_from_db(session: Session, count: Optional[int] = None, order_by = None) -> list[Product]:
     request = select(Product)
     if count is not None:
         request = request.limit(count)
+    if order_by is not None:
+        request = request.order_by(order_by)
     return session.scalars(request).all()

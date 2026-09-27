@@ -8,7 +8,14 @@
 <div class="container">
     <ul>
         {% for product in products %}
-            <li><a href="/products/{{ product.root }}">{{ product.name }}</a></li>
+            <li class="product-item">
+                <a class="product-name" href="/products/{{ product.root }}">{{ product.name }}</a>
+                <div class="product-meta">
+                    {% if product.brand %}<span>{{ product.brand }}</span>{% endif %}
+                    <span>{{ product.feedbacks_count or 0 }} отз</span>
+                    <span>{{ product.review_rating or "—" }} ★</span>
+                </div>
+            </li>
         {% endfor %}
     </ul>
 </div>
