@@ -1,13 +1,9 @@
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-
-from app.models.database.review import Review
-
+from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.database import Review, ReviewAnalysisCache
+from app.models.database import Product, Review, ReviewAnalysisCache
 from app.models.review_analysis import ReviewAnalysis
 
 def upsert_review(session:Session, review:dict) -> Review | None:
@@ -34,11 +30,19 @@ def upsert_review_analysis_cache(session:Session, review_analysis:dict) -> Revie
             setattr(review_analysis_at_db, key, value)
     return review_analysis_at_db
 
-def get_reviews_from_db(session: Session, root: int, count: str) -> list[Review]:
-    return session.scalars(select(Review).where(Review.root == root).limit(count)).all()
+def get_reviews_from_db(session: Session, root: Optional[int] = None, count: Optional[int] = None) -> list[Review]:
+    request = select(Review)
+    if root is not None:
+        request = request.where(Review.root == root)
+    if count is not None:
+        request = request.limit(count)
+    return session.scalars(request).all()
+
+def get_reviews_for_products(session: Session, products: list[Product]) -> dict[int, list[Review]]:
+    return {product.root: get_reviews_from_db(session, product.root) for product in products}
 
 def remove_cached_reviews(session: Session, reviews: list[Review]) -> list[Review]:
-    return [r for r in reviews if (session.get(ReviewAnalysisCache, r.id) is None)]
+    return [review for review in reviews if (session.get(ReviewAnalysisCache, review.id) is None)]
 
 def save_reviews_analysis_to_db(session: Session, results: list[ReviewAnalysis]) -> None:
     for result in results:
