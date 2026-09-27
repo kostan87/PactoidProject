@@ -1,0 +1,49 @@
+body {
+    font-family: system-ui, sans-serif;
+    background: #1b1b1b;
+    color: #bebebe;
+    font-size: 2vh;
+}
+ul {
+    list-style: none;
+    padding: 0;
+}
+li {
+    background: rgb(41, 40, 43);
+    border: 1px solid #4c5061;
+    border-radius: 0.5vw;
+    padding: 1vw 2vw;
+    margin-bottom: 0.3vw;
+}       
+a {
+    color: #bebebe;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+span {
+    white-space: nowrap;
+}
+
+.container {
+    background: rgb(26, 25, 29);
+    border: 1px solid #4c5061;
+    border-radius: 0.5vw;
+    max-width: 40vw;
+    margin: 2vw auto;
+    padding: 1vw;
+}
+.aspect {
+    background: rgb(44, 42, 48);
+    border: 1px solid #4c5061;
+    border-radius: 0.15vw;
+    padding: 0vw 0vw;
+    margin: 0vw;
+}
+.positive {
+    background-color: rgb(17, 61, 17);
+}
+.negative {
+    background-color: rgb(107, 92, 4);
+}

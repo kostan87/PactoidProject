@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Карточка товара</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <p>Name: {{ product.name }}<p>
+    <p>Brand: {{ product.brand }}</p>
+    <p>Supplier: {{ product.supplier }}</p>
+    {% if aggregate is none %}
+        <span>На данный товар сводка отсутствует</span>
+    {% else %}
+        <p>Достоинства:</p>
+        <ul>
+        {% for aspect, details in aggregate.aggregate.items() %}
+            {% if details.pos > details.neg %}
+                <span class="aspect">{{ aspect }} {{ details.pos }}-{{ details.neg }}</span>
+            {% endif %}
+        {% endfor %}
+        </ul>
+        <p>Недостатки:</p>
+        <ul>
+        {% for aspect, details in aggregate.aggregate.items() %}
+            {% if details.pos <= details.neg %}
+                <span class="aspect">{{ aspect }} {{ details.pos }}-{{ details.neg }}</span>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+</body>
+</html>

@@ -2,13 +2,15 @@
 <html>
 <head>
     <title>Товары</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Товары</h1>
+<div class="container">
     <ul>
         {% for product in products %}
-            <li>{{ product.name }} — {{ product.brand }} — рейтинг: {{ product.rating }}</li>
+            <li><a href="/products/{{ product.root }}">{{ product.name }}</a></li>
         {% endfor %}
     </ul>
+</div>
 </body>
 </html>
