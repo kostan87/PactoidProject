@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, Any
 
-from sqlalchemy import select
+from sqlalchemy import select, ColumnElement
 from sqlalchemy.orm import Session
 
 from app.models.database import Product, Review, ReviewAnalysisCache
@@ -30,12 +30,14 @@ def upsert_review_analysis_cache(session:Session, review_analysis:dict) -> Revie
             setattr(review_analysis_at_db, key, value)
     return review_analysis_at_db
 
-def get_reviews_from_db(session: Session, root: Optional[int] = None, count: Optional[int] = None) -> list[Review]:
+def get_reviews_from_db(session: Session, root: Optional[int] = None, count: Optional[int] = None, order_by: ColumnElement[Any] = None) -> list[Review]:
     request = select(Review)
     if root is not None:
         request = request.where(Review.root == root)
     if count is not None:
         request = request.limit(count)
+    if order_by is not None:
+        request = request.order_by(order_by)
     return session.scalars(request).all()
 
 def get_reviews_for_products(session: Session, products: list[Product]) -> dict[int, list[Review]]:

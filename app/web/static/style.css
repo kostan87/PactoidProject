@@ -61,3 +61,16 @@ span {
     color: #8a8a8a;
     font-size: 0.9em;
 }
+.review-head {
+    display: flex;
+    justify-content: space-between;
+    color: #8a8a8a;
+    font-size: 0.9em;
+    margin-bottom: 0.5vw;
+}
+.review p {
+    margin: 0.3vw 0;
+    line-height: 1.4;
+}
+.review .pros { color: #6da86d; }
+.review .cons { color: #c9a227; }

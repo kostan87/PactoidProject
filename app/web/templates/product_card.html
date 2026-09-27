@@ -29,6 +29,20 @@
         {% endfor %}
         </ul>
     {% endif %}
+    <h3>Отзывы ({{ reviews|length }})</h3>
+    <ul class="reviews">
+        {% for review in reviews %}
+            <li class="review">
+                <div class="review-head">
+                    <span class="review-rating">{{ review.product_valuation or "—" }} ★</span>
+                    <span class="review-date">{{ review.created_date.strftime("%Y-%m-%d") }}</span>
+                </div>
+                {% if review.text %}<p>{{ review.text }}</p>{% endif %}
+                {% if review.pros %}<p class="pros">+ {{ review.pros }}</p>{% endif %}
+                {% if review.cons %}<p class="cons">− {{ review.cons }}</p>{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 </div>
 </body>
 </html>

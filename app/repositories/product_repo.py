@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, Any
 
-from sqlalchemy import select
+from sqlalchemy import select, ColumnElement
 from sqlalchemy.orm import Session
 
 from app.models.database import Product, PriceHistory, ProductAnalysisCache
@@ -41,7 +41,7 @@ def upsert_product_analysis_cache(session: Session, product_analysis: dict) -> P
             setattr(product_analysis_at_db, key, value)
     return product_analysis
 
-def get_products_from_db(session: Session, count: Optional[int] = None, order_by = None) -> list[Product]:
+def get_products_from_db(session: Session, count: Optional[int] = None, order_by: ColumnElement[Any] = None) -> list[Product]:
     request = select(Product)
     if count is not None:
         request = request.limit(count)
