@@ -1,4 +1,4 @@
-from sqlalchemy import select, inspect, desc
+from sqlalchemy import select, inspect, desc, func
 from sqlalchemy.orm import Session
 from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.templating import Jinja2Templates
@@ -24,7 +24,8 @@ def index():
 def products_list(request: Request, session: Session = Depends(get_session)):
     templates = Jinja2Templates(directory="app/web/templates")
     products = get_products_from_db(session, count=1000, order_by=desc(Product.feedbacks_count))
-    return templates.TemplateResponse(request, "products.html", {"products": products})
+    reviews_count = dict(session.execute((select(Review.root, func.count(Review.id)).group_by(Review.root))).all())
+    return templates.TemplateResponse(request, "products.html", {"products": products, "reviews_count": reviews_count})
 
 @app.get("/products/{root}")
 def product_detail(request: Request, root: int, session: Session = Depends(get_session)):
@@ -38,7 +39,8 @@ def product_detail(request: Request, root: int, session: Session = Depends(get_s
     if aggregate is not None:
         mapper = inspect(ProductAnalysisCache).mapper
         aggregate = {col.key: getattr(aggregate, col.key) for col in mapper.columns}
-
+        aggregate = sorted(aggregate["aggregate"].items(), key=lambda x: x[1]["pos"] + x[1]["neg"], reverse=True)
+    
     reviews = get_reviews_from_db(session, root=root, order_by=desc(Review.created_date))
 
     return templates.TemplateResponse(request, "product_card.html", {"product": product, "aggregate": aggregate, "reviews": reviews})

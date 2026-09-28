@@ -35,11 +35,37 @@ span {
     padding: 1vw;
 }
 .aspect {
+    display: inline-block;
+    position: relative;    /* ← якорь для тултипа */
     background: rgb(44, 42, 48);
     border: 1px solid #4c5061;
-    border-radius: 0.15vw;
-    padding: 0vw 0vw;
-    margin: 0vw;
+    border-radius: 0.3vw;
+    padding: 0.3vw 0.8vw;
+    font-size: 0.95em;
+    cursor: help;
+}
+
+.aspect .tooltip {
+    display: none;         /* скрыт по умолчанию */
+    position: absolute;
+    bottom: 100%;          /* над аспектом */
+    left: 50%;
+    transform: translateX(-50%);  /* центрирование */
+    margin-bottom: 0.4vw;
+    z-index: 10;
+    background: rgb(20, 20, 24);
+    border: 1px solid #4c5061;
+    border-radius: 0.3vw;
+    padding: 0.5vw 0.8vw;
+    width: max-content;
+    max-width: 30vw;       /* чтобы не растягивался на пол-экрана */
+    white-space: normal;   /* ← перебивает твой глобальный span { white-space: nowrap } */
+    font-size: 0.9em;
+    line-height: 1.4;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+.aspect:hover .tooltip {
+    display: block;
 }
 .product-item {
     display: flex;

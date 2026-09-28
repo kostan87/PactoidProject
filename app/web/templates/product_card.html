@@ -9,25 +9,21 @@
     <p>Name: {{ product.name }}<p>
     <p>Brand: {{ product.brand }}</p>
     <p>Supplier: {{ product.supplier }}</p>
+    <h3>Аспекты</h3>
     {% if aggregate is none %}
         <span>На данный товар сводка отсутствует</span>
     {% else %}
-        <p>Достоинства:</p>
-        <ul>
-        {% for aspect, details in aggregate.aggregate.items() %}
-            {% if details.pos > details.neg %}
-                <span class="aspect">{{ aspect }} {{ details.pos }}-{{ details.neg }}</span>
-            {% endif %}
-        {% endfor %}
-        </ul>
-        <p>Недостатки:</p>
-        <ul>
-        {% for aspect, details in aggregate.aggregate.items() %}
-            {% if details.pos <= details.neg %}
-                <span class="aspect">{{ aspect }} {{ details.pos }}-{{ details.neg }}</span>
-            {% endif %}
-        {% endfor %}
-        </ul>
+        <div class="aspects">
+            {% for aspect, details in aggregate %}
+                <span class="aspect">
+                    {{ aspect }} <b>{{ details.pos + details.neg }}</b><small>(+{{ details.pos }}/−{{ details.neg }})</small>
+                    <div class="tooltip">
+                        <b>Плюсы:</b> {{ details.advantages|join('; ') or '' }}<br/><br/>
+                        <b>Минусы:</b> {{ details.defects|join('; ') or '' }}
+                    </div>
+                </span>
+            {% endfor %}
+        </div>
     {% endif %}
     <h3>Отзывы ({{ reviews|length }})</h3>
     <ul class="reviews">
@@ -44,5 +40,6 @@
         {% endfor %}
     </ul>
 </div>
+<script src="/static/tooltip.js"></script>
 </body>
 </html>
