@@ -1,6 +1,6 @@
 from typing import Optional, Any
 
-from sqlalchemy import select, ColumnElement
+from sqlalchemy import select, desc, ColumnElement
 from sqlalchemy.orm import Session
 
 from app.models.database import Product, PriceHistory, ProductAnalysisCache
@@ -48,3 +48,13 @@ def get_products_from_db(session: Session, count: Optional[int] = None, order_by
     if order_by is not None:
         request = request.order_by(order_by)
     return session.scalars(request).all()
+
+def get_products_prices_from_db(session: Session, products: list[Product]) -> list[int]:
+    products_ids = [p.id for p in products]
+    rows = session.execute(
+        select(PriceHistory.product_id, PriceHistory.price_product)
+        .where(PriceHistory.product_id.in_(products_ids))
+        .order_by(PriceHistory.product_id, desc(PriceHistory.recorded_at))
+        .distinct(PriceHistory.product_id)
+    ).all()
+    return {product: int(price) for product, price in rows}

@@ -11,9 +11,12 @@
             <li class="product-item">
                 <a class="product-name" href="/products/{{ product.root }}">{{ product.name }}</a>
                 <div class="product-meta">
-                    {% if product.brand %}<span>{{ product.brand }}</span>{% endif %}
                     <span>{{ reviews_count[product.root] or 0 }} отз</span>
                     <span>{{ product.review_rating or "—" }} ★</span>
+                </div>
+                <div class="product-meta">
+                    <span>{{ product.brand or "—" }}</span>
+                    <span>{{ prices[product.id] or "—" }} RUB</span>
                 </div>
             </li>
         {% endfor %}

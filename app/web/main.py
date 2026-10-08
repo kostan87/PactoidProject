@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.db import SessionLocal
 from app.models.database import Product, ProductAnalysisCache, Review
-from app.repositories.product_repo import get_products_from_db
+from app.repositories.product_repo import get_products_from_db, get_products_prices_from_db
 from app.repositories.review_repo import get_reviews_from_db
 
 app = FastAPI()
@@ -25,7 +25,8 @@ def products_list(request: Request, session: Session = Depends(get_session)):
     templates = Jinja2Templates(directory="app/web/templates")
     products = get_products_from_db(session, count=1000, order_by=desc(Product.feedbacks_count))
     reviews_count = dict(session.execute((select(Review.root, func.count(Review.id)).group_by(Review.root))).all())
-    return templates.TemplateResponse(request, "products.html", {"products": products, "reviews_count": reviews_count})
+    prices = get_products_prices_from_db(session, products)
+    return templates.TemplateResponse(request, "products.html", {"products": products, "reviews_count": reviews_count, "prices": prices})
 
 @app.get("/products/{root}")
 def product_detail(request: Request, root: int, session: Session = Depends(get_session)):
